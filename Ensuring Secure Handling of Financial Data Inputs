@@ -1,0 +1,11 @@
+// Basic validation example for a spending entry
+function validateSpendingEntry(amount, category) {
+  if (isNaN(amount) || amount <= 0) {
+    return "Invalid amount.";
+  }
+  const validCategories = ['Food', 'Transportation', 'Entertainment'];
+  if (!validCategories.includes(category)) {
+    return "Invalid category.";
+  }
+  return "Valid entry.";
+}
