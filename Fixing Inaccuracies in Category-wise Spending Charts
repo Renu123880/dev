@@ -1,0 +1,13 @@
+// Example of fixing data aggregation using JavaScript
+const spendingData = [
+  { category: 'Food', amount: 200 },
+  { category: 'Food', amount: 100 },
+  { category: 'Transportation', amount: 50 },
+];
+
+const categoryTotals = spendingData.reduce((acc, item) => {
+  acc[item.category] = (acc[item.category] || 0) + item.amount;
+  return acc;
+}, {});
+
+console.log(categoryTotals); // Output: { Food: 300, Transportation: 50 }
