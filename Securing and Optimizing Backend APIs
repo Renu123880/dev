@@ -1,0 +1,48 @@
+const express = require('express');
+const crypto = require('crypto');
+const app = express();
+
+app.use(express.json());
+
+// Mock database
+const transactions = [
+  { id: 'txn123', amount: 100, status: 'completed', refunded: false },
+];
+const refunds = new Map(); // To track refund requests for idempotency
+
+// /refunds endpoint
+app.post('/refunds', (req, res) => {
+  const { transactionId, amount } = req.body;
+
+  // Input validation
+  if (!transactionId || typeof amount !== 'number' || amount <= 0) {
+    return res.status(400).json({ error: 'Invalid input.' });
+  }
+
+  const transaction = transactions.find((txn) => txn.id === transactionId);
+  if (!transaction) {
+    return res.status(404).json({ error: 'Transaction not found.' });
+  }
+  if (transaction.refunded) {
+    return res.status(400).json({ error: 'Transaction already refunded.' });
+  }
+  if (amount > transaction.amount) {
+    return res.status(400).json({ error: 'Refund amount exceeds transaction amount.' });
+  }
+
+  // Ensure idempotency
+  const refundId = crypto.createHash('sha256').update(transactionId + amount).digest('hex');
+  if (refunds.has(refundId)) {
+    return res.status(200).json({ message: 'Refund already processed.', refundId });
+  }
+
+  // Process refund
+  transaction.refunded = true;
+  refunds.set(refundId, { transactionId, amount });
+
+  // Respond with success
+  return res.status(201).json({ message: 'Refund processed successfully.', refundId });
+});
+
+// Start server (for demonstration purposes)
+app.listen(3000, () => console.log('API running on http://localhost:3000'));
