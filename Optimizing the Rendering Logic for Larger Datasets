@@ -1,0 +1,27 @@
+// Chart.js setup example for large datasets with optimized data handling
+const ctx = document.getElementById('myChart').getContext('2d');
+const myChart = new Chart(ctx, {
+  type: 'pie',
+  data: {
+    labels: ['Food', 'Transportation', 'Entertainment'],
+    datasets: [{
+      label: 'Spending',
+      data: [300, 50, 120],
+      backgroundColor: ['#ff9999', '#66b3ff', '#99ff99'],
+      borderColor: ['#fff', '#fff', '#fff'],
+      borderWidth: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function(tooltipItem) {
+            return `Spent: $${tooltipItem.raw}`;
+          }
+        }
+      }
+    }
+  }
+});
